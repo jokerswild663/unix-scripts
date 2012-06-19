@@ -1,0 +1,11 @@
+#!/usr/bin/ruby
+
+list = `/cat/bin/netgrouplist linux-login-sys` #calls custom script to get netgrouplist.  
+
+$array = list.split("\n")
+
+while !$array.empty? do
+$box = $array.pop();
+system("ssh #{$box} Documents/test_scripts/sys_processes")
+end
+
