@@ -1,0 +1,28 @@
+#!/bin/sh
+
+machine=`uname`
+
+displaylist=`ps -U $LOGNAME -o pid,args | egrep 'X[^ ]*vnc' | awk '{print $3}'`
+if echo -- "$@" | grep -- '-kill' >/dev/null || [ -z "$displaylist" ]; then
+	
+	if [ -f ~/.vnc/xstartup ]; then
+		echo "\n"
+	else
+	#************************************ keep an eye on this piece of code **********************************
+		if $machine == 'Linux'; then
+		`/usr/local/bin/writer.sh`
+
+		else
+		`/opt/csw/bin/writer.sh`
+		fi
+	fi
+#***************************************************************************************************************
+        exec /usr/bin/vncserver "$@" 
+else
+        echo
+        for display in $displaylist; do
+                echo "  ATTENTION: You already have a VNC session running on $display" 
+                echo "  To terminate stale VNC sessions, run \`vncserver -kill $display\`" 
+                echo
+        done
+fi
