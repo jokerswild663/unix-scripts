@@ -14,3 +14,8 @@ done
 
 Result=`fping -t $Timeout $Website | awk {'print $3'}`
 
+if [ $Result == 'unreachable' ]; then
+	echo "$Website is not reachable" | mail -s "Error: site unreachable" $Email
+else
+	echo "Website reachable"
+fi
