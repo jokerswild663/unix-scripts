@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ ${#@} -eq '0' ];
+then
+	printf 'usage:
+-a: a command
+-p: p command\n\n'
+
+fi
+
+while getopts ":a:p" opt; do
+	case $opt in
+		a) echo "hello from a" 
+		;;
+		
+		p) echo "inside p"
+		;;
+	esac
+done
