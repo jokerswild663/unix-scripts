@@ -3,17 +3,19 @@
 if [ ${#@} -eq '0' ];
 then
 	printf 'usage:
--a: a command
--p: p command\n\n'
+-u: u print UDP ports that are listening.
+-t: t print TCP portst that are listening.\n\n'
 
 fi
 
-while getopts ":a:p" opt; do
+while getopts ":u:t" opt; do
 	case $opt in
-		a) echo "hello from a" 
+		u) echo "UDP ports that are listening:" 
+		   netstat -lu
 		;;
 		
-		p) echo "inside p"
+		t) printf "TCP ports that are listening:"
+		   netstat -lt
 		;;
 	esac
 done
