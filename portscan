@@ -9,7 +9,7 @@ then
 
 fi
 
-while getopts ":u:t:l" opt; do
+while getopts "utl" opt; do
 	case $opt in
 		u) echo "UDP ports that are listening:" 
 		   exec netstat -lu
