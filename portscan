@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ ${#@} -eq '0' ];
+then
+	printf 'usage:
+-u: u print UDP ports that are listening.
+-t: t print TCP ports that are listening.
+-l: l print all listening sockets.
+-c: c <program name> search for the port a program is running on
+-p: p <port number> find which program is running on a specified port\n\n'
+
+fi
+
+while getopts "utlc:p:" opt; do
+	case $opt in
+		u) echo "UDP ports that are listening:" 
+		   exec netstat -lu
+		;;
+		t) printf "TCP ports that are listening:"
+		   netstat -lt
+		;;
+		l) printf "All available sockets:"
+		   netstat -l
+		;;
+		c) printf "matches for $OPTARG:\n"
+		   netstat -ap | grep $OPTARG
+		;;
+		p) printf "matches for $OPTARG:\n"
+		   netstat -an | grep ":$OPTARG"
+	esac
+done
