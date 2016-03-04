@@ -4,18 +4,20 @@ if [ ${#@} -eq '0' ];
 then
 	printf 'usage:
 -u: u print UDP ports that are listening.
--t: t print TCP portst that are listening.\n\n'
+-t: t print TCP ports that are listening.
+-l: l print all listening sockets.\n\n'
 
 fi
 
-while getopts ":u:t" opt; do
+while getopts ":u:t:l" opt; do
 	case $opt in
 		u) echo "UDP ports that are listening:" 
-		   netstat -lu
+		   exec netstat -lu
 		;;
-		
 		t) printf "TCP ports that are listening:"
 		   netstat -lt
 		;;
+		l) printf "All available sockets:"
+		   netstat -l
 	esac
 done
