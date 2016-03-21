@@ -11,8 +11,6 @@ disk_percentage() {
 	local fileSize=`wc -c $1 | awk '{ print $1 }'`
 	local diskSize=`df -l | grep \/$ | awk '{ print $2}'`
 	
-	echo $diskSize
-
 	if [ -a $1 ];
 	then
 		fileSizeKB=`echo $(( fileSize * 1000 ))`
@@ -20,9 +18,9 @@ disk_percentage() {
 
 	## disk usage percentage
 	#percent=$(awk "BEGIN { pc=100*${fileSizeKB/${diskSize}; i=int(pc); print (pc-i<0.5)?i:i+1} }")
-	awk -v simple='plarh' -f <(cat - <<- 'EOD'
+	awk -v file="$fileSizeKB" -v disk="$diskSize" -f <(cat - <<- 'EOD'
 	BEGIN {
-		print simple
+		print file/disk * 100 " % disk space"
 	}
 EOD
 )
@@ -33,7 +31,7 @@ EOD
 while getopts "f:a:" opt; do
 	case ${opt} in
 		f) 
-			echo hello
+			echo $OPTARG " uses: "
 			disk_percentage $OPTARG
 		;;
 		a) 
