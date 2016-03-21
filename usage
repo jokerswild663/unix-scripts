@@ -19,8 +19,14 @@ disk_percentage() {
 	fi
 
 	## disk usage percentage
-	percent=$(awk "BEGIN { pc=100*${fileSizeKB/${diskSize}; i=int(pc); print (pc-i<0.5)?i:i+1} }")
-	echo $percent
+	#percent=$(awk "BEGIN { pc=100*${fileSizeKB/${diskSize}; i=int(pc); print (pc-i<0.5)?i:i+1} }")
+	awk -v simple='plarh' -f <(cat - <<- 'EOD'
+	BEGIN {
+		print simple
+	}
+EOD
+)
+	echo $scriptVariable
 }
 
 
