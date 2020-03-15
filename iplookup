@@ -1,0 +1,53 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+NC='\033[0m'
+
+testColor() {
+  echo -e "${RED}RED${NC}"
+  echo -e "${GREEN}GREEN${NC}"
+  echo -e "${ORANGE}ORANGE${NC}"
+  echo -e "${NC}NC${NC}"
+}
+
+getAddress() {
+  local defaultIp=`ifconfig $1 | grep 'inet\s' | awk '{print $2}'`
+  echo -e "$defaultIp"
+}
+
+getInterface() {
+  local defaultInterface=`route -n | grep 'UG' | awk '{print $8}'`
+  echo -e "$defaultInterface"
+}
+
+getRoute() {
+  local defaultRoute=`route -n | grep 'UG' | awk '{print $2}'`
+  echo -e "$defaultRoute"
+}
+
+helpMe () {
+  echo -e "${RED}Summary: ${ORANGE}This will get the default route and ip address${NC}" 
+  echo -e "${RED}Usage:${NC}" 
+  echo -e "${ORANGE}iplookup <option>${NC}" 
+  echo -e "${GREEN}--interface: ${ORANGE}This will output the interface of the default route${NC}" 
+  echo -e "${GREEN}--ip: ${ORANGE}This will output the ipV4 of the default route${NC}" 
+  echo -e "${GREEN}--route: ${ORANGE}This will output the default route${NC}" 
+  echo -e "${GREEN}--address: ${ORANGE}This will output the ipV4 of the default route ${NC}" 
+}
+
+case $1 in
+  --ip)
+    echo -e "${GREEN}$(getAddress `getInterface`)${NC}"
+  ;;
+  --interface)
+    echo -e "${GREEN}`getInterface`${NC}"
+  ;;
+  --route)
+    echo -e "${GREEN}`getRoute`${NC}"
+  ;;
+  *) 
+    helpMe
+  ;;
+esac
