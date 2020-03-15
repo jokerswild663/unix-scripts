@@ -12,6 +12,11 @@ testColor() {
   echo -e "${NC}NC${NC}"
 }
 
+getInterface() {
+  local defaultInterface=`route -n | grep 'UG' | awk '{print $8}'`
+  echo -e "${GREEN}$defaultInterface${NC}"
+}
+
 getRoute() {
   local defaultRoute=`route -n | grep 'UG' | awk '{print $2}'`
   echo -e "${GREEN}$defaultRoute${NC}"
@@ -21,11 +26,15 @@ helpMe () {
   echo -e "${RED}Summary: ${ORANGE}This will get the default route and ip address${NC}" 
   echo -e "${RED}Usage:${NC}" 
   echo -e "${ORANGE}iplookup <option>${NC}" 
+  echo -e "${GREEN}--interface: ${ORANGE}This will output the interface of the default route${NC}" 
   echo -e "${GREEN}--route: ${ORANGE}This will output the default route${NC}" 
   echo -e "${GREEN}--address: ${ORANGE}This will output the ipV4 of the default route ${NC}" 
 }
 
 case $1 in
+  --interface)
+    getInterface
+  ;;
   --route)
     getRoute
   ;;
