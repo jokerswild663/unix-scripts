@@ -12,14 +12,19 @@ testColor() {
   echo -e "${NC}NC${NC}"
 }
 
+getAddress() {
+  local defaultIp=`ifconfig $1 | grep 'inet\s' | awk '{print $2}'`
+  echo -e "$defaultIp"
+}
+
 getInterface() {
   local defaultInterface=`route -n | grep 'UG' | awk '{print $8}'`
-  echo -e "${GREEN}$defaultInterface${NC}"
+  echo -e "$defaultInterface"
 }
 
 getRoute() {
   local defaultRoute=`route -n | grep 'UG' | awk '{print $2}'`
-  echo -e "${GREEN}$defaultRoute${NC}"
+  echo -e "$defaultRoute"
 }
 
 helpMe () {
@@ -27,16 +32,20 @@ helpMe () {
   echo -e "${RED}Usage:${NC}" 
   echo -e "${ORANGE}iplookup <option>${NC}" 
   echo -e "${GREEN}--interface: ${ORANGE}This will output the interface of the default route${NC}" 
+  echo -e "${GREEN}--ip: ${ORANGE}This will output the ipV4 of the default route${NC}" 
   echo -e "${GREEN}--route: ${ORANGE}This will output the default route${NC}" 
   echo -e "${GREEN}--address: ${ORANGE}This will output the ipV4 of the default route ${NC}" 
 }
 
 case $1 in
+  --ip)
+    echo -e "${GREEN}$(getAddress `getInterface`)${NC}"
+  ;;
   --interface)
-    getInterface
+    echo -e "${GREEN}`getInterface`${NC}"
   ;;
   --route)
-    getRoute
+    echo -e "${GREEN}`getRoute`${NC}"
   ;;
   *) 
     helpMe
