@@ -1,0 +1,16 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+cpustats() {
+  echo -e "${GREEN}cpu${NC}"
+}
+
+case $1 in
+  --cpu)
+    cpustats
+  ;;
+esac
