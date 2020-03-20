@@ -6,11 +6,32 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 cpustats() {
-  echo -e "${GREEN}cpu${NC}"
+  local MODEL=`grep -E -m1 'model\sname' /proc/cpuinfo | cut -d ":" -f2 | sed -E 's/^\s+//g'`
+  local VENDOR=`grep -E -m1 'vendor_id' /proc/cpuinfo | awk '{print $3}'`
+  local CORES=`grep -E -m1 'cpu\scores\b' /proc/cpuinfo | awk '{print $4}'`
+  local CACHE=`grep -E -m1 'cache\ssize\b' /proc/cpuinfo | awk '{print $4}'`
+  local CURRENT_CORE_SPEED=`grep -E 'cpu\s+MHz\b' /proc/cpuinfo | awk '{print $4}' | tr -s '\n' " "`
+
+  echo -e "${ORANGE}Model: ${GREEN}$MODEL${NC}"
+  echo -e "${ORANGE}Vendor: ${GREEN}$VENDOR${NC}"
+  echo -e "${ORANGE}Number of physical Cores: ${GREEN}$CORES${NC}"
+  echo -e "${ORANGE}Core Cache Size: ${GREEN}$CACHE${NC}"
+  echo -e "${ORANGE}Current Core speed: ${GREEN}$CURRENT_CORE_SPEED${NC}"
+}
+
+helpme() {
+  printf "${ORANGE}Description: This will get hardware information about the system
+usage: resources <option>
+options:${NC} 
+  ${GREEN}--cpu)${NC} ${ORANGE}prints out cpu information of the system${NC}
+"
 }
 
 case $1 in
   --cpu)
     cpustats
   ;;
+  
+  *)
+    helpme
 esac
