@@ -19,11 +19,24 @@ cpustats() {
   echo -e "${ORANGE}Current Core speed: ${GREEN}$CURRENT_CORE_SPEED${NC}"
 }
 
+memstats() {
+  local TOTALRAM=`cat /proc/meminfo | grep -E -m1 'MemTotal' | awk '{ print $2/1000000}'`
+  local AVAILABLERAM=`cat /proc/meminfo | grep -E -m1 'MemAvailable' | awk '{ print $2/1000000}'`
+#  local FREERAM=`cat /proc/meminfo | grep -E -m1 'MemFree' | awk '{ print $2/1000000}'`
+#  local BUFFERMEM=`cat /proc/meminfo | grep -E -m1 'Buffers' | awk '{ print $2/1000000}'`
+#  local CACHEMEM=`cat /proc/meminfo | grep -E -m1 'Cached' | awk '{ print $2/1000000}'`
+
+#  local USEDRAM=`awk '{ print $1-$2}' <<< "${TOTALRAM} ${FREERAM}"`
+  echo -e "Available memory: ${GREEN}$AVAILABLERAM${NC}"
+  echo -e "Total Memory: ${ORANGE}$TOTALRAM${NC}"
+}
+
 helpme() {
   printf "${ORANGE}Description: This will get hardware information about the system
 usage: resources <option>
 options:${NC} 
   ${GREEN}--cpu)${NC} ${ORANGE}prints out cpu information of the system${NC}
+  ${GREEN}--ram)${NC} ${ORANGE}prints out information of ram on sysstem${NC}
 "
 }
 
@@ -32,6 +45,10 @@ case $1 in
     cpustats
   ;;
   
+  --ram)
+    memstats
+  ;;
+
   *)
     helpme
 esac
