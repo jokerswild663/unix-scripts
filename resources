@@ -22,13 +22,29 @@ cpustats() {
 memstats() {
   local TOTALRAM=`cat /proc/meminfo | grep -E -m1 'MemTotal' | awk '{ print $2/1000000}'`
   local AVAILABLERAM=`cat /proc/meminfo | grep -E -m1 'MemAvailable' | awk '{ print $2/1000000}'`
-#  local FREERAM=`cat /proc/meminfo | grep -E -m1 'MemFree' | awk '{ print $2/1000000}'`
-#  local BUFFERMEM=`cat /proc/meminfo | grep -E -m1 'Buffers' | awk '{ print $2/1000000}'`
-#  local CACHEMEM=`cat /proc/meminfo | grep -E -m1 'Cached' | awk '{ print $2/1000000}'`
 
-#  local USEDRAM=`awk '{ print $1-$2}' <<< "${TOTALRAM} ${FREERAM}"`
-  echo -e "Available memory: ${GREEN}$AVAILABLERAM${NC}"
+  echo -e "\nAvailable memory: ${GREEN}$AVAILABLERAM${NC}"
   echo -e "Total Memory: ${ORANGE}$TOTALRAM${NC}"
+}
+
+ramhardware() {
+  local MEMINFO=$(sudo dmidecode -t memory)
+  local RAMSLOTS=`printf "$MEMINFO\n" | grep -E 'Number\sOf\sDevices' | awk '{print $4}'`
+  local FORMFACTOR=($(printf "$MEMINFO\n" | grep -E 'Form\sFactor' | awk '{print $3}'))
+  local SIZE=($(printf "$MEMINFO\n" | grep -E 'Size' | awk '{print $2}'))
+  local TYPE=($(printf "$MEMINFO\n" | grep -E '^\s+Type\:' | awk '{print $2}'))
+  local MFG=($(printf "$MEMINFO\n" | grep -E '^\s+Manufacturer\:' | awk '{print $2}'))
+
+  echo -e "${ORANGE}Ram Slots: ${GREEN}$RAMSLOTS${NC}\n"
+
+  for i in {0,1};
+  do
+    echo -e "${ORANGE}Slot: ${GREEN}$i${NC}"
+    echo -e "${ORANGE}Size (MB): ${GREEN}${SIZE[$i]}${NC}"
+    echo -e "${ORANGE}Form Factor: ${GREEN}${FORMFACTOR[$i]}${NC}"
+    echo -e "${ORANGE}Slot Type: ${GREEN}${TYPE[$i]}${NC}"
+    echo -e "${ORANGE}Manufacturer: ${GREEN}${MFG[$i]}${NC}\n"
+  done
 }
 
 helpme() {
@@ -47,6 +63,7 @@ case $1 in
   
   --ram)
     memstats
+    ramhardware
   ;;
 
   *)
