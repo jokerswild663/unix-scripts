@@ -5,6 +5,8 @@ ORANGE='\033[0;33m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+DISKPERCENTAGE_LIMIT='80'
+
 cpustats() {
   local MODEL=`grep -E -m1 'model\sname' /proc/cpuinfo | cut -d ":" -f2 | sed -E 's/^\s+//g'`
   local VENDOR=`grep -E -m1 'vendor_id' /proc/cpuinfo | awk '{print $3}'`
@@ -68,6 +70,23 @@ diskcheck() {
   echo -e "${ORANGE}Disk Manufacturer: ${GREEN}$DISKMFG${NC}"
 }
 
+diskusage() {
+  echo -e "${ORANGE}\nDisk Usage${NC}"
+  local DISKINFO=`df -h --output=target,used,avail,pcent`
+
+  IFS=$'\n'
+  local DISKARR=($DISKINFO)
+
+  for i in "${DISKARR[@]}"
+  do
+    if [[ `echo $i | awk '{print $4}' | tr -d '%'` -gt $DISKPERCENTAGE_LIMIT ]]; then
+      echo -e "${RED}$i ${ORANGE}Disk utilization dangerously high. Check filesystem.${NC}"
+    else
+      echo -e "${GREEN}$i${NC}"
+    fi
+  done
+}
+
 case $1 in
   --cpu)
     cpustats
@@ -75,6 +94,7 @@ case $1 in
 
   --disk)
     diskcheck
+    diskusage
   ;;
   
   --ram)
