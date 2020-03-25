@@ -33,8 +33,7 @@ helpMe () {
   echo -e "${ORANGE}iplookup <option>${NC}" 
   echo -e "${GREEN}--interface: ${ORANGE}This will output the interface of the default route${NC}" 
   echo -e "${GREEN}--ip: ${ORANGE}This will output the ipV4 of the default route${NC}" 
-  echo -e "${GREEN}--route: ${ORANGE}This will output the default route${NC}" 
-  echo -e "${GREEN}--address: ${ORANGE}This will output the ipV4 of the default route ${NC}" 
+  echo -e "${GREEN}--route: ${ORANGE}This will output the default gateway${NC}" 
 }
 
 case $1 in
