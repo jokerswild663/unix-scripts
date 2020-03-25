@@ -1,0 +1,71 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+cpustats() {
+  local MODEL=`grep -E -m1 'model\sname' /proc/cpuinfo | cut -d ":" -f2 | sed -E 's/^\s+//g'`
+  local VENDOR=`grep -E -m1 'vendor_id' /proc/cpuinfo | awk '{print $3}'`
+  local CORES=`grep -E -m1 'cpu\scores\b' /proc/cpuinfo | awk '{print $4}'`
+  local CACHE=`grep -E -m1 'cache\ssize\b' /proc/cpuinfo | awk '{print $4}'`
+  local CURRENT_CORE_SPEED=`grep -E 'cpu\s+MHz\b' /proc/cpuinfo | awk '{print $4}' | tr -s '\n' " "`
+
+  echo -e "${ORANGE}Model: ${GREEN}$MODEL${NC}"
+  echo -e "${ORANGE}Vendor: ${GREEN}$VENDOR${NC}"
+  echo -e "${ORANGE}Number of physical Cores: ${GREEN}$CORES${NC}"
+  echo -e "${ORANGE}Core Cache Size: ${GREEN}$CACHE${NC}"
+  echo -e "${ORANGE}Current Core speed: ${GREEN}$CURRENT_CORE_SPEED${NC}"
+}
+
+memstats() {
+  local TOTALRAM=`cat /proc/meminfo | grep -E -m1 'MemTotal' | awk '{ print $2/1000000}'`
+  local AVAILABLERAM=`cat /proc/meminfo | grep -E -m1 'MemAvailable' | awk '{ print $2/1000000}'`
+
+  echo -e "\nAvailable memory: ${GREEN}$AVAILABLERAM${NC}"
+  echo -e "Total Memory: ${ORANGE}$TOTALRAM${NC}"
+}
+
+ramhardware() {
+  local MEMINFO=$(sudo dmidecode -t memory)
+  local RAMSLOTS=`printf "$MEMINFO\n" | grep -E 'Number\sOf\sDevices' | awk '{print $4}'`
+  local FORMFACTOR=($(printf "$MEMINFO\n" | grep -E 'Form\sFactor' | awk '{print $3}'))
+  local SIZE=($(printf "$MEMINFO\n" | grep -E 'Size' | awk '{print $2}'))
+  local TYPE=($(printf "$MEMINFO\n" | grep -E '^\s+Type\:' | awk '{print $2}'))
+  local MFG=($(printf "$MEMINFO\n" | grep -E '^\s+Manufacturer\:' | awk '{print $2}'))
+
+  echo -e "${ORANGE}Ram Slots: ${GREEN}$RAMSLOTS${NC}\n"
+
+  for i in {0,1};
+  do
+    echo -e "${ORANGE}Slot: ${GREEN}$i${NC}"
+    echo -e "${ORANGE}Size (MB): ${GREEN}${SIZE[$i]}${NC}"
+    echo -e "${ORANGE}Form Factor: ${GREEN}${FORMFACTOR[$i]}${NC}"
+    echo -e "${ORANGE}Slot Type: ${GREEN}${TYPE[$i]}${NC}"
+    echo -e "${ORANGE}Manufacturer: ${GREEN}${MFG[$i]}${NC}\n"
+  done
+}
+
+helpme() {
+  printf "${ORANGE}Description: This will get hardware information about the system
+usage: resources <option>
+options:${NC} 
+  ${GREEN}--cpu)${NC} ${ORANGE}prints out cpu information of the system${NC}
+  ${GREEN}--ram)${NC} ${ORANGE}prints out information of ram on sysstem${NC}
+"
+}
+
+case $1 in
+  --cpu)
+    cpustats
+  ;;
+  
+  --ram)
+    memstats
+    ramhardware
+  ;;
+
+  *)
+    helpme
+esac
