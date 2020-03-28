@@ -21,6 +21,34 @@ cpustats() {
   echo -e "${ORANGE}Current Core speed: ${GREEN}$CURRENT_CORE_SPEED${NC}"
 }
 
+diskcheck() {
+  local DISKDRIVEINFO=`sudo fdisk -l | grep Disk`
+  local HARDDISKID=`printf "$DISKDRIVEINFO" | grep -E '\/dev\/sd.*' | awk '{print $2}' | tr -d ':'`
+  local TOTALDISKCAP=`printf "$DISKDRIVEINFO" | grep -E '\/dev\/sd.*' | awk '{print $3}'`
+  local DISKMFG=`printf "$DISKDRIVEINFO" | grep -E 'Disk\s+model\:' | cut -d ':' -f2`
+
+  echo -e "${ORANGE}Disk identifier: ${GREEN}$HARDDISKID${NC}"
+  echo -e "${ORANGE}Total Disk Capacity: ${GREEN}$TOTALDISKCAP${NC}"
+  echo -e "${ORANGE}Disk Manufacturer: ${GREEN}$DISKMFG${NC}"
+}
+
+diskusage() {
+  echo -e "${ORANGE}\nDisk Usage${NC}"
+  local DISKINFO=`df -h --output=target,used,avail,pcent`
+
+  IFS=$'\n'
+  local DISKARR=($DISKINFO)
+
+  for i in "${DISKARR[@]}"
+  do
+    if [[ `echo $i | awk '{print $4}' | tr -d '%'` -gt $DISKPERCENTAGE_LIMIT ]]; then
+      echo -e "${RED}$i ${ORANGE}Disk utilization dangerously high. Check filesystem.${NC}"
+    else
+      echo -e "${GREEN}$i${NC}"
+    fi
+  done
+}
+
 memstats() {
   local TOTALRAM=`cat /proc/meminfo | grep -E -m1 'MemTotal' | awk '{ print $2/1000000}'`
   local AVAILABLERAM=`cat /proc/meminfo | grep -E -m1 'MemAvailable' | awk '{ print $2/1000000}'`
@@ -56,35 +84,17 @@ options:${NC}
   ${GREEN}--cpu)${NC} ${ORANGE}prints out cpu information of the system${NC}
   ${GREEN}--ram)${NC} ${ORANGE}prints out information of ram on system${NC}
   ${GREEN}--disk)${NC} ${ORANGE}prints out information of disk volumes on system${NC}
+  ${GREEN}--net)${NC} ${ORANGE}prints out information of network adapters on system${NC}
 "
 }
 
-diskcheck() {
-  local DISKDRIVEINFO=`sudo fdisk -l | grep Disk`
-  local HARDDISKID=`printf "$DISKDRIVEINFO" | grep -E '\/dev\/sd.*' | awk '{print $2}' | tr -d ':'`
-  local TOTALDISKCAP=`printf "$DISKDRIVEINFO" | grep -E '\/dev\/sd.*' | awk '{print $3}'`
-  local DISKMFG=`printf "$DISKDRIVEINFO" | grep -E 'Disk\s+model\:' | cut -d ':' -f2`
+networkhardware() {
+  local DEVICEINFO=`lspci`
+  local WIFIDEVICE=`echo -e "$DEVICEINFO" | grep -E 'Network\s+controller' | cut -d ':' -f3 | cut -d '(' -f1 | sed -E 's/^[ \t]*|[ \t]*$//g'`
+  local ETHERNETDEVICE=`echo -e "$DEVICEINFO" | grep -E 'Ethernet\s+controller' | cut -d ':' -f3 | cut -d '(' -f1 | sed -E 's/^[ \t]*|[ \t]*$//g'`
 
-  echo -e "${ORANGE}Disk identifier: ${GREEN}$HARDDISKID${NC}"
-  echo -e "${ORANGE}Total Disk Capacity: ${GREEN}$TOTALDISKCAP${NC}"
-  echo -e "${ORANGE}Disk Manufacturer: ${GREEN}$DISKMFG${NC}"
-}
-
-diskusage() {
-  echo -e "${ORANGE}\nDisk Usage${NC}"
-  local DISKINFO=`df -h --output=target,used,avail,pcent`
-
-  IFS=$'\n'
-  local DISKARR=($DISKINFO)
-
-  for i in "${DISKARR[@]}"
-  do
-    if [[ `echo $i | awk '{print $4}' | tr -d '%'` -gt $DISKPERCENTAGE_LIMIT ]]; then
-      echo -e "${RED}$i ${ORANGE}Disk utilization dangerously high. Check filesystem.${NC}"
-    else
-      echo -e "${GREEN}$i${NC}"
-    fi
-  done
+  echo -e "${ORANGE}WiFi: ${GREEN}$WIFIDEVICE${NC}" 
+  echo -e "${ORANGE}Ethernet: ${GREEN}$ETHERNETDEVICE${NC}" 
 }
 
 case $1 in
@@ -100,6 +110,9 @@ case $1 in
   --ram)
     memstats
     ramhardware
+  ;;
+  --net)
+    networkhardware
   ;;
 
   *)
