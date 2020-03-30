@@ -93,8 +93,19 @@ networkhardware() {
   local WIFIDEVICE=`echo -e "$DEVICEINFO" | grep -E 'Network\s+controller' | cut -d ':' -f3 | cut -d '(' -f1 | sed -E 's/^[ \t]*|[ \t]*$//g'`
   local ETHERNETDEVICE=`echo -e "$DEVICEINFO" | grep -E 'Ethernet\s+controller' | cut -d ':' -f3 | cut -d '(' -f1 | sed -E 's/^[ \t]*|[ \t]*$//g'`
 
+  echo -e "${ORANGE}Network Hardware${NC}"
   echo -e "${ORANGE}WiFi: ${GREEN}$WIFIDEVICE${NC}" 
   echo -e "${ORANGE}Ethernet: ${GREEN}$ETHERNETDEVICE${NC}" 
+}
+
+networkbandwidth() {
+  local DEFAULTROUTE=`route -n | grep 'UG' | awk '{print $8}'`
+  local RECEIVE=`iw dev $DEFAULTROUTE link | grep -E 'rx\s+bitrate' | grep -Eo '[0-9]+.*\/s'`
+  local TRANSMIT=`iw dev $DEFAULTROUTE link | grep -E 'tx\s+bitrate' | grep -Eo '[0-9]+.*\/s'`
+
+  echo -e "${ORANGE}Default gateway: ${GREEN}$DEFAULTROUTE${NC}"
+  echo -e "${ORANGE}Download: ${GREEN}$RECEIVE${NC}"
+  echo -e "${ORANGE}Upload: ${GREEN}$TRANSMIT${NC}"
 }
 
 case $1 in
@@ -113,6 +124,8 @@ case $1 in
   ;;
   --net)
     networkhardware
+    echo -e ''
+    networkbandwidth
   ;;
 
   *)
