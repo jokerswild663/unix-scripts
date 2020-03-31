@@ -6,6 +6,9 @@ By Jeff Wyckoff
 ### Summary
 This repository contains utility scripts for *nix management
 
+### Installation
+`source ./install --user` for single user
+`source ./install --all` for all users
 ## Folders
 
 #### regex
