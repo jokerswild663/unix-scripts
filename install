@@ -1,0 +1,61 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+GREEN='\033[0;32m'
+BLUE='\033[1;36m'
+NC='\033[0m'
+
+BASEDIR=`dirname $0`
+CURRENTUSER=`whoami`
+SINGLEUSERPATH="/home/$CURRENTUSER/.local/bin"
+SINGLEUSERPATHRE="\/home\/$CURRENTUSER\/\.local\/bin"
+MULTIUSERPATH="/usr/local/bin"
+MULTIUSERPATHRE="\/usr\/local\/bin"
+
+helpme() {
+  echo -e "${ORANGE}Description: installs scripts to path${NC}"
+  echo -e "${ORANGE}usage: usage <option>${NC}"
+  
+  echo -e "${ORANGE}options:${NC}"
+  echo -e "${BLUE}--user: ${ORANGE}install only for current user${NC}"
+  echo -e "${BLUE}--all: ${ORANGE}installs for all users${NC}"
+}
+
+userInstallPath() {
+  local USERPATHEXIST=`echo $PATH | grep -Eo "$2"`
+
+  if [[ -z $USERPATHEXIST ]]; then
+    echo 'path not found.  Setting it now'
+    echo "export PATH=$1:\$PATH" >> ~/.bashrc
+    export PATH=$1:$PATH
+  fi
+
+  echo $1
+}
+
+installScripts() {
+  echo -e "${ORANGE}Installing scripts to user path ${GREEN}$1${NC}"
+
+  if [[ $2 -eq 0 ]]; then
+    mkdir -pv $1
+    cp -v $BASEDIR/statuscheck/* $1
+  else
+    sudo mkdir -pv $1
+    sudo cp -v $BASEDIR/statuscheck/* $1
+  fi
+}
+
+case $1 in
+  --user)
+    installScripts `userInstallPath $SINGLEUSERPATH $SINGLEUSERPATHRE` 0
+  ;;
+
+  --all)
+    installScripts `userInstallPath $MULTIUSERPATH $MULTIUSERPATHRE` 1
+  ;;
+
+  *)
+    helpme
+  ;;
+esac
