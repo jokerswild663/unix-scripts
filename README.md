@@ -7,8 +7,15 @@ By Jeff Wyckoff
 This repository contains utility scripts for *nix management
 
 ### Installation
-`source ./install --user` for single user
-`source ./install --all` for all users
+single user installation
+```bash
+source ./install --user 
+```
+
+multi-user installation
+```bash 
+source ./install --all
+```
 ## Folders
 
 #### regex
