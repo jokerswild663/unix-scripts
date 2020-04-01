@@ -1,0 +1,12 @@
+#!/bin/bash
+
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+CURRENTDIR=`dirname $0`
+
+SCRIPTS=`ls -1 $CURRENTDIR | grep -v 'scriptlist'`
+
+echo -e "${ORANGE}$SCRIPTS${NC}"
