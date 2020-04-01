@@ -9,13 +9,18 @@ This repository contains utility scripts for *nix management
 ### Installation
 single user installation
 ```bash
-source ./install --user 
+./install --user 
 ```
 
 multi-user installation
 ```bash 
-source ./install --all
+./install --all
 ```
+### List available scripts
+```bash
+scriptlist
+```
+
 ## Folders
 
 #### regex
