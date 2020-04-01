@@ -44,6 +44,8 @@ installScripts() {
     sudo mkdir -pv $1
     sudo cp -v $BASEDIR/statuscheck/* $1
   fi
+
+  echo -e "${ORANGE}to initialize in current shell, run ${GREEN}source ~/.bashrc${NC}"
 }
 
 case $1 in
