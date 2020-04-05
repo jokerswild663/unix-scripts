@@ -7,6 +7,9 @@ NC='\033[0m'
 
 CURRENTDIR=`dirname $0`
 
+echo -e "${ORANGE}Scripts available${NC}\n"
+
 SCRIPTS=`ls -1 $CURRENTDIR | grep -v 'scriptlist'`
 
-echo -e "${ORANGE}$SCRIPTS${NC}"
+echo -e "${GREEN}$SCRIPTS${NC}"
+echo -e "\n${ORANGE}End Scripts${NC}"
